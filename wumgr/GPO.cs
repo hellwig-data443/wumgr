@@ -74,31 +74,36 @@ namespace wumgr
         static public AUOptions GetAU(out int day, out int time)
         {
             AUOptions option = AUOptions.Default;
+            day = 0;
+            time = 0;
             try
             {
                 var subKey = Registry.LocalMachine.OpenSubKey(mWuGPO + @"\AU", false);
-                object value_no = subKey == null ? null : subKey.GetValue("NoAutoUpdate");
-                if (value_no == null || (int)value_no == 0)
+                if (subKey != null)
                 {
-                    object value_au = subKey == null ? null : subKey.GetValue("AUOptions");
-                    switch (value_au == null ? 0 : (int)value_au)
+                    object value_no = subKey == null ? null : subKey.GetValue("NoAutoUpdate");
+                    if (value_no == null || (int)value_no == 0)
                     {
-                        case 0: option = AUOptions.Default; break;
-                        case 2: option = AUOptions.Notification; break;
-                        case 3: option = AUOptions.Download; break;
-                        case 4: option = AUOptions.Scheduled; break;
-                        case 5: option = AUOptions.ManagedByAdmin; break;
+                        object value_au = subKey == null ? null : subKey.GetValue("AUOptions");
+                        switch (value_au == null ? 0 : (int)value_au)
+                        {
+                            case 0: option = AUOptions.Default; break;
+                            case 2: option = AUOptions.Notification; break;
+                            case 3: option = AUOptions.Download; break;
+                            case 4: option = AUOptions.Scheduled; break;
+                            case 5: option = AUOptions.ManagedByAdmin; break;
+                        }
                     }
-                }
-                else
-                {
-                    option = AUOptions.Disabled;
-                }
+                    else
+                    {
+                        option = AUOptions.Disabled;
+                    }
 
-                object value_day = subKey.GetValue("ScheduledInstallDay");
-                day = value_day != null ? (int)value_day : 0;
-                object value_time = subKey.GetValue("ScheduledInstallTime");
-                time = value_time != null ? (int)value_time : 0;
+                    object value_day = subKey.GetValue("ScheduledInstallDay");
+                    day = value_day != null ? (int)value_day : 0;
+                    object value_time = subKey.GetValue("ScheduledInstallTime");
+                    time = value_time != null ? (int)value_time : 0; 
+                }
             }
             catch { day = 0; time = 0; }
             return option;
